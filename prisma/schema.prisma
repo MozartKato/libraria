@@ -14,14 +14,57 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum BorrowStatus {
+  borrowed
+  returned
+  overdue
+}
+
+enum UserRole {
+  user
+  admin
+}
 model Book{
   id        Int      @id @default(autoincrement())
   title     String
   author    String
-  published Int
-  isbn      String   @unique
+  year      Int
+  code      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  borrows Borrow[]
 
   @@map("books")
+}
+
+model Borrow{
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  bookId     Int
+  borrowedAt DateTime @default(now())
+  dueDate    DateTime
+  returnedAt DateTime?
+  status     BorrowStatus @default(borrowed)
+  fine       Float? @default(0.0)
+
+  user      User    @relation(fields: [userId], references: [id])
+  book      Book    @relation(fields: [bookId], references: [id])
+  @@map("borrows")
+  @@index([userId])
+  @@index([bookId])
+}
+
+
+model User{
+  id        Int    @id @default(autoincrement())
+  name      String
+  email     String @unique
+  role      UserRole @default(user)
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  borrowedBooks Borrow[]
+  @@map("users")
+  @@unique([email, name]) // Ensure unique combination of email and name
+  @@index([email]) // Index for faster lookups by email
 }
