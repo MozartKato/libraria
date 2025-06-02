@@ -1,21 +1,22 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
 
-export function signToken(payload: object, expiresIn:  string = '7h'): string {
-    if (!JWT_SECRET) {
-        throw new Error('JWT_SECRET is not defined');
-    }
-    return jwt.sign(payload, JWT_SECRET, { expiresIn });
+export function signToken(payload: object){
+  return jwt.sign(payload, SECRET_KEY, {
+    expiresIn: '7d', // Token expires in 7 days
+    algorithm: 'HS256', // Using HMAC SHA-256 algorithm
+  });
 }
 
-export function verifyToken(token: string){
-    if (!JWT_SECRET) {
-        throw new Error('JWT_SECRET is not defined');
-    }
-    try {
-        return jwt.verify(token, JWT_SECRET);
-    } catch (error) {
-        throw new Error(error instanceof Error ? error.message : 'Invalid token');
-    }
+export function verifyToken(token: string): JwtPayload | null {
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY, {
+      algorithms: ['HS256'],
+    });
+    return typeof decoded === 'string' ? null : decoded;
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return null;
+  }
 }
