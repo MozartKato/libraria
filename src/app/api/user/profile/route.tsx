@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
 
         const user = await prisma.user.findUnique({
             where: { id: Number(payload.userId) },
+            include: { borrowedBooks: true }
         });
 
         if (!user) {
