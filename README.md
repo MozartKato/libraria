@@ -11,7 +11,7 @@ Follow these steps to run the project locally:
 
 ### 1. Clone the Repository
 ```bash
-git clone <repo-url>
+git clone https://github.com/MozartKato/libraria
 cd libraria
 ```
 
