@@ -2,31 +2,35 @@
   "auth": {
     "login": {
       "title": "Masuk",
-      "description": "Masuk ke akun Anda",
+      "description": "Masuk ke akun Anda untuk mengakses semua fitur",
       "email": "Email",
       "emailPlaceholder": "Masukkan email Anda",
-      "password": "Kata Sandi",
-      "passwordPlaceholder": "Masukkan kata sandi Anda",
+      "password": "Password",
+      "passwordPlaceholder": "Masukkan password Anda",
       "submit": "Masuk",
+      "loading": "Memproses...",
       "noAccount": "Belum punya akun?",
-      "register": "Daftar"
+      "register": "Daftar di sini"
     },
     "register": {
       "title": "Daftar",
-      "description": "Buat akun baru",
-      "name": "Nama",
-      "namePlaceholder": "Masukkan nama Anda",
+      "description": "Buat akun baru untuk mengakses semua fitur",
+      "name": "Nama Lengkap",
+      "namePlaceholder": "Masukkan nama lengkap Anda",
       "email": "Email",
       "emailPlaceholder": "Masukkan email Anda",
-      "password": "Kata Sandi",
-      "passwordPlaceholder": "Masukkan kata sandi Anda",
-      "confirmPassword": "Konfirmasi Kata Sandi",
-      "confirmPasswordPlaceholder": "Masukkan ulang kata sandi Anda",
+      "password": "Password",
+      "passwordPlaceholder": "Masukkan password Anda",
+      "confirmPassword": "Konfirmasi Password",
+      "confirmPasswordPlaceholder": "Konfirmasi password Anda",
       "submit": "Daftar",
-      "hasAccount": "Sudah punya akun?",
-      "login": "Masuk",
-      "success": "Pendaftaran berhasil! Silakan masuk."
-    }
+      "loading": "Memproses...",
+      "haveAccount": "Sudah punya akun?",
+      "login": "Masuk di sini",
+      "passwordMismatch": "Password dan konfirmasi password tidak cocok",
+      "success": "Registrasi berhasil! Silakan masuk dengan akun Anda"
+    },
+    "logout": "Keluar"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -35,18 +39,19 @@
       "title": "Informasi Pengguna",
       "name": "Nama",
       "email": "Email",
-      "role": "Role"
+      "role": "Peran"
     },
     "borrowHistory": {
       "title": "Riwayat Peminjaman",
+      "description": "Daftar buku yang telah Anda pinjam",
       "empty": "Belum ada riwayat peminjaman",
       "table": {
-        "id": "ID Pinjaman",
         "book": "Judul Buku",
-        "borrowedAt": "Tanggal Pinjam",
-        "dueDate": "Batas Kembali",
+        "bookNotFound": "Buku tidak ditemukan",
+        "borrowDate": "Tanggal Pinjam",
+        "dueDate": "Tanggal Kembali",
         "status": "Status",
-        "returnedAt": "Tanggal Kembali",
+        "returnedAt": "Tanggal Dikembalikan",
         "fine": "Denda"
       },
       "status": {
@@ -57,27 +62,31 @@
     }
   },
   "home": {
-    "title": "Selamat Datang di Perpustakaan Digital",
-    "description": "Temukan ribuan buku digital dan kelola peminjaman dengan mudah",
+    "title": "Selamat Datang di Libraria",
+    "description": "Platform perpustakaan digital modern untuk mengelola koleksi buku dan peminjaman dengan mudah",
+    "login": "Masuk",
+    "register": "Daftar",
     "features": {
+      "title": "Fitur",
+      "subtitle": "Semua yang Anda butuhkan untuk mengelola perpustakaan",
+      "description": "Libraria menyediakan berbagai fitur untuk membantu Anda mengelola perpustakaan dengan lebih efisien",
       "search": {
         "title": "Pencarian Cepat",
-        "description": "Temukan buku yang Anda cari dengan cepat dan mudah"
+        "description": "Temukan buku yang Anda cari dengan cepat menggunakan fitur pencarian yang canggih"
       },
       "borrow": {
-        "title": "Peminjaman Digital",
-        "description": "Pinjam buku digital dengan mudah dan aman"
+        "title": "Peminjaman Mudah",
+        "description": "Proses peminjaman dan pengembalian buku yang mudah dan terorganisir"
       },
       "manage": {
-        "title": "Kelola Koleksi",
-        "description": "Kelola koleksi buku digital Anda dengan mudah"
+        "title": "Manajemen Koleksi",
+        "description": "Kelola koleksi buku Anda dengan sistem katalog yang terstruktur"
       }
-    },
-    "cta": "Mulai Sekarang"
+    }
   },
   "common": {
-    "loading": "Memuat...",
     "error": "Terjadi kesalahan",
+    "loading": "Memuat...",
     "success": "Berhasil"
   }
 } 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/src/app/components/ui/Button';
@@ -27,21 +27,6 @@ export default function LoginPage() {
     });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [baseUrl, setBaseUrl] = useState('');
-
-    useEffect(() => {
-        const fetchConfig = async () => {
-            try {
-                const response = await fetch('/api/config');
-                const data = await response.json();
-                setBaseUrl(data.baseUrl);
-            } catch (error) {
-                console.error('Error fetching config:', error);
-                setBaseUrl('http://localhost:3000');
-            }
-        };
-        fetchConfig();
-    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -59,12 +44,11 @@ export default function LoginPage() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!baseUrl) return;
-        
         setIsLoading(true);
         setError('');
 
         try {
+            const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
             const response = await fetch(`${baseUrl}/api/auth/login`, {
                 method: 'POST',
                 headers: {
@@ -85,104 +69,98 @@ export default function LoginPage() {
             }
 
             setCookie('token', data.token, 7);
-            router.push(`/${currentLocale}/pages/dashboard`);
-            router.refresh();
+            const redirectTo = searchParams.get('redirectTo') || `/${currentLocale}/pages/dashboard`;
+            router.push(redirectTo);
         } catch (err) {
             setError(err instanceof Error ? err.message : translations[currentLocale].common.error);
-            setCookie('token', '', -1);
         } finally {
             setIsLoading(false);
         }
     };
 
-    if (!baseUrl) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">{translations[currentLocale].common.loading}</p>
+    return (
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
+            <div className="flex justify-end p-4">
+                <LanguageSwitcher />
+            </div>
+            <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+                <div className="max-w-md w-full space-y-8">
+                    <div className="text-center">
+                        <Link href={`/${currentLocale}`} className="inline-flex items-center text-blue-600 hover:text-blue-500">
+                            <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            <span className="ml-2 text-2xl font-bold">Libraria</span>
+                        </Link>
+                    </div>
+                    <Card className="shadow-xl">
+                        <CardHeader className="space-y-1">
+                            <CardTitle className="text-2xl font-bold text-center">{t.title}</CardTitle>
+                            <CardDescription className="text-center">{t.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div className="space-y-2">
+                                    <label htmlFor="email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                        {t.email}
+                                    </label>
+                                    <input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        autoComplete="email"
+                                        required
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        placeholder={t.emailPlaceholder}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label htmlFor="password" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                        {t.password}
+                                    </label>
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        autoComplete="current-password"
+                                        required
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        placeholder={t.passwordPlaceholder}
+                                    />
+                                </div>
+                                {error && (
+                                    <div className="text-sm text-red-500 text-center">
+                                        {error}
+                                    </div>
+                                )}
+                                <Button
+                                    type="submit"
+                                    variant="primary"
+                                    className="w-full"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? t.loading : t.submit}
+                                </Button>
+                            </form>
+                        </CardContent>
+                        <CardFooter className="flex flex-col space-y-4">
+                            <div className="text-sm text-center text-gray-500">
+                                {t.noAccount}{' '}
+                                <Link
+                                    href={`/${currentLocale}/pages/auth/register`}
+                                    className="font-medium text-blue-600 hover:text-blue-500"
+                                >
+                                    {t.register}
+                                </Link>
+                            </div>
+                        </CardFooter>
+                    </Card>
                 </div>
             </div>
-        );
-    }
-
-    return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <Card variant="elevated" className="w-full max-w-md">
-                <div className="absolute top-4 right-4">
-                    <LanguageSwitcher />
-                </div>
-                <CardHeader>
-                    <CardTitle className="text-2xl text-center">{t.title}</CardTitle>
-                    <CardDescription className="text-center">
-                        {searchParams.get('registered') ? (
-                            <span className="text-green-600">
-                                {translations[currentLocale].auth.register.success}
-                            </span>
-                        ) : (
-                            t.description
-                        )}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        {error && (
-                            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
-                                {error}
-                            </div>
-                        )}
-
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                {t.email}
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                required
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
-                                placeholder={t.emailPlaceholder}
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                                {t.password}
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                required
-                                value={formData.password}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
-                                placeholder={t.passwordPlaceholder}
-                            />
-                        </div>
-
-                        <Button
-                            type="submit"
-                            variant="primary"
-                            className="w-full"
-                            isLoading={isLoading}
-                        >
-                            {t.submit}
-                        </Button>
-                    </form>
-                </CardContent>
-                <CardFooter className="flex flex-col space-y-4">
-                    <p className="text-sm text-gray-600 text-center">
-                        {t.noAccount}{' '}
-                        <Link href={`/${currentLocale}/pages/auth/register`} className="text-blue-600 hover:underline">
-                            {t.register}
-                        </Link>
-                    </p>
-                </CardFooter>
-            </Card>
         </div>
     );
 }
