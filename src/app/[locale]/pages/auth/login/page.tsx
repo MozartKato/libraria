@@ -1,20 +1,47 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/src/app/components/ui/Button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/src/app/components/ui/Card';
+import { LanguageSwitcher } from '@/src/app/components/LanguageSwitcher';
+import { useLanguage } from '@/src/app/hooks/useLanguage';
+import commonId from '@/src/app/locales/id/common.json';
+import commonEn from '@/src/app/locales/en/common.json';
+
+const translations = {
+  id: commonId,
+  en: commonEn,
+};
 
 export default function LoginPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { currentLocale } = useLanguage();
+    const t = translations[currentLocale].auth.login;
+
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [baseUrl, setBaseUrl] = useState('');
+
+    useEffect(() => {
+        const fetchConfig = async () => {
+            try {
+                const response = await fetch('/api/config');
+                const data = await response.json();
+                setBaseUrl(data.baseUrl);
+            } catch (error) {
+                console.error('Error fetching config:', error);
+                setBaseUrl('http://localhost:3000');
+            }
+        };
+        fetchConfig();
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -32,11 +59,12 @@ export default function LoginPage() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!baseUrl) return;
+        
         setIsLoading(true);
         setError('');
 
         try {
-            const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
             const response = await fetch(`${baseUrl}/api/auth/login`, {
                 method: 'POST',
                 headers: {
@@ -49,53 +77,50 @@ export default function LoginPage() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || 'Login gagal');
+                throw new Error(data.error || data.message || translations[currentLocale].common.error);
             }
 
             if (!data.token) {
                 throw new Error('Token tidak diterima dari server');
             }
 
-            // Simpan token dengan pengaturan yang lebih aman
-            setCookie('token', data.token, 7); // Token berlaku 7 hari
-
-            // Verifikasi token dengan mencoba mengakses endpoint yang membutuhkan autentikasi
-            const verifyResponse = await fetch(`${baseUrl}/api/user/profile`, {
-                headers: {
-                    'Authorization': `Bearer ${data.token}`,
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-            });
-
-            if (!verifyResponse.ok) {
-                throw new Error('Verifikasi token gagal');
-            }
-
-            // Redirect ke dashboard
-            router.push('/pages/dashboard');
+            setCookie('token', data.token, 7);
+            router.push(`/${currentLocale}/pages/dashboard`);
             router.refresh();
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Terjadi kesalahan saat login');
-            // Hapus cookie jika login gagal
+            setError(err instanceof Error ? err.message : translations[currentLocale].common.error);
             setCookie('token', '', -1);
         } finally {
             setIsLoading(false);
         }
     };
 
+    if (!baseUrl) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">{translations[currentLocale].common.loading}</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
             <Card variant="elevated" className="w-full max-w-md">
+                <div className="absolute top-4 right-4">
+                    <LanguageSwitcher />
+                </div>
                 <CardHeader>
-                    <CardTitle className="text-2xl text-center">Masuk ke Akun Anda</CardTitle>
+                    <CardTitle className="text-2xl text-center">{t.title}</CardTitle>
                     <CardDescription className="text-center">
                         {searchParams.get('registered') ? (
                             <span className="text-green-600">
-                                Registrasi berhasil! Silakan masuk dengan akun Anda.
+                                {translations[currentLocale].auth.register.success}
                             </span>
                         ) : (
-                            'Masuk untuk mengakses semua fitur Libraria'
+                            t.description
                         )}
                     </CardDescription>
                 </CardHeader>
@@ -109,7 +134,7 @@ export default function LoginPage() {
 
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                Email
+                                {t.email}
                             </label>
                             <input
                                 type="email"
@@ -119,13 +144,13 @@ export default function LoginPage() {
                                 value={formData.email}
                                 onChange={handleChange}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
-                                placeholder="Masukkan email"
+                                placeholder={t.emailPlaceholder}
                             />
                         </div>
 
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                                Password
+                                {t.password}
                             </label>
                             <input
                                 type="password"
@@ -135,7 +160,7 @@ export default function LoginPage() {
                                 value={formData.password}
                                 onChange={handleChange}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
-                                placeholder="Masukkan password"
+                                placeholder={t.passwordPlaceholder}
                             />
                         </div>
 
@@ -145,15 +170,15 @@ export default function LoginPage() {
                             className="w-full"
                             isLoading={isLoading}
                         >
-                            Masuk
+                            {t.submit}
                         </Button>
                     </form>
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-4">
                     <p className="text-sm text-gray-600 text-center">
-                        Belum punya akun?{' '}
-                        <Link href="/pages/auth/register" className="text-blue-600 hover:underline">
-                            Daftar di sini
+                        {t.noAccount}{' '}
+                        <Link href={`/${currentLocale}/pages/auth/register`} className="text-blue-600 hover:underline">
+                            {t.register}
                         </Link>
                     </p>
                 </CardFooter>

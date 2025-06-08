@@ -1,0 +1,83 @@
+{
+  "auth": {
+    "login": {
+      "title": "Login",
+      "description": "Sign in to your account",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "submit": "Sign In",
+      "noAccount": "Don't have an account?",
+      "register": "Register"
+    },
+    "register": {
+      "title": "Register",
+      "description": "Create a new account",
+      "name": "Name",
+      "namePlaceholder": "Enter your name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "submit": "Register",
+      "hasAccount": "Already have an account?",
+      "login": "Sign In",
+      "success": "Registration successful! Please sign in."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to the library dashboard",
+    "userInfo": {
+      "title": "User Information",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role"
+    },
+    "borrowHistory": {
+      "title": "Borrowing History",
+      "empty": "No borrowing history yet",
+      "table": {
+        "id": "Borrow ID",
+        "book": "Book Title",
+        "borrowedAt": "Borrowed Date",
+        "dueDate": "Due Date",
+        "status": "Status",
+        "returnedAt": "Return Date",
+        "fine": "Fine"
+      },
+      "status": {
+        "borrowed": "Borrowed",
+        "returned": "Returned",
+        "overdue": "Overdue"
+      }
+    }
+  },
+  "home": {
+    "title": "Welcome to Digital Library",
+    "description": "Discover thousands of digital books and manage borrowing easily",
+    "features": {
+      "search": {
+        "title": "Quick Search",
+        "description": "Find the books you're looking for quickly and easily"
+      },
+      "borrow": {
+        "title": "Digital Borrowing",
+        "description": "Borrow digital books easily and securely"
+      },
+      "manage": {
+        "title": "Manage Collection",
+        "description": "Manage your digital book collection easily"
+      }
+    },
+    "cta": "Get Started"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success"
+  }
+} 

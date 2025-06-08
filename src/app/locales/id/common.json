@@ -1,0 +1,83 @@
+{
+  "auth": {
+    "login": {
+      "title": "Masuk",
+      "description": "Masuk ke akun Anda",
+      "email": "Email",
+      "emailPlaceholder": "Masukkan email Anda",
+      "password": "Kata Sandi",
+      "passwordPlaceholder": "Masukkan kata sandi Anda",
+      "submit": "Masuk",
+      "noAccount": "Belum punya akun?",
+      "register": "Daftar"
+    },
+    "register": {
+      "title": "Daftar",
+      "description": "Buat akun baru",
+      "name": "Nama",
+      "namePlaceholder": "Masukkan nama Anda",
+      "email": "Email",
+      "emailPlaceholder": "Masukkan email Anda",
+      "password": "Kata Sandi",
+      "passwordPlaceholder": "Masukkan kata sandi Anda",
+      "confirmPassword": "Konfirmasi Kata Sandi",
+      "confirmPasswordPlaceholder": "Masukkan ulang kata sandi Anda",
+      "submit": "Daftar",
+      "hasAccount": "Sudah punya akun?",
+      "login": "Masuk",
+      "success": "Pendaftaran berhasil! Silakan masuk."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Selamat datang di dashboard perpustakaan",
+    "userInfo": {
+      "title": "Informasi Pengguna",
+      "name": "Nama",
+      "email": "Email",
+      "role": "Role"
+    },
+    "borrowHistory": {
+      "title": "Riwayat Peminjaman",
+      "empty": "Belum ada riwayat peminjaman",
+      "table": {
+        "id": "ID Pinjaman",
+        "book": "Judul Buku",
+        "borrowedAt": "Tanggal Pinjam",
+        "dueDate": "Batas Kembali",
+        "status": "Status",
+        "returnedAt": "Tanggal Kembali",
+        "fine": "Denda"
+      },
+      "status": {
+        "borrowed": "Dipinjam",
+        "returned": "Dikembalikan",
+        "overdue": "Terlambat"
+      }
+    }
+  },
+  "home": {
+    "title": "Selamat Datang di Perpustakaan Digital",
+    "description": "Temukan ribuan buku digital dan kelola peminjaman dengan mudah",
+    "features": {
+      "search": {
+        "title": "Pencarian Cepat",
+        "description": "Temukan buku yang Anda cari dengan cepat dan mudah"
+      },
+      "borrow": {
+        "title": "Peminjaman Digital",
+        "description": "Pinjam buku digital dengan mudah dan aman"
+      },
+      "manage": {
+        "title": "Kelola Koleksi",
+        "description": "Kelola koleksi buku digital Anda dengan mudah"
+      }
+    },
+    "cta": "Mulai Sekarang"
+  },
+  "common": {
+    "loading": "Memuat...",
+    "error": "Terjadi kesalahan",
+    "success": "Berhasil"
+  }
+} 
