@@ -15,7 +15,13 @@ export async function GET(request: NextRequest) {
 
         const user = await prisma.user.findUnique({
             where: { id: Number(payload.userId) },
-            include: { borrowedBooks: true }
+            include: { 
+                borrowedBooks: {
+                    include: {
+                        book: true
+                    }
+                }
+            }
         });
 
         if (!user) {
@@ -25,7 +31,6 @@ export async function GET(request: NextRequest) {
         // exclude password
         //eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password: _, ...userWithoutPassword } = user;
-
 
         return NextResponse.json(userWithoutPassword);
     } catch (error) {
