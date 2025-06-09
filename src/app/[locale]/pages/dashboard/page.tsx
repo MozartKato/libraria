@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/src/app/components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/app/components/ui/Card';
 import { LanguageSwitcher } from '@/src/app/components/LanguageSwitcher';
 import { useLanguage } from '@/src/app/hooks/useLanguage';
+import { useUserProfile } from '@/src/app/hooks/useUserProfile';
+import { BorrowHistoryTable } from '@/src/app/components/features/BorrowHistoryTable';
+import { config } from '@/src/app/config';
 import commonId from '@/src/app/locales/id/common.json';
 import commonEn from '@/src/app/locales/en/common.json';
 
@@ -15,91 +17,14 @@ const translations = {
   en: commonEn,
 };
 
-interface Book {
-  id: string;
-  title: string;
-  author: string;
-  isbn: string;
-  publishedYear: number;
-  quantity: number;
-  available: number;
-}
-
-interface Borrow {
-  id: string;
-  bookId: string;
-  userId: string;
-  borrowDate: string;
-  dueDate: string;
-  returnedAt: string | null;
-  fine: number;
-  status: 'borrowed' | 'returned' | 'overdue';
-  book?: {
-    data?: {
-      title: string;
-    };
-  };
-}
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  borrows: Borrow[];
-}
-
 export default function DashboardPage() {
   const router = useRouter();
   const { currentLocale } = useLanguage();
+  const { user, isLoading, error } = useUserProfile();
   const t = translations[currentLocale].dashboard;
 
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    const getCookie = (name: string) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(';').shift();
-      return null;
-    };
-
-    const token = getCookie('token');
-    if (!token) {
-      router.push(`/${currentLocale}/pages/auth/login?redirectTo=/${currentLocale}/pages/dashboard`);
-      return;
-    }
-
-    const fetchUserProfile = async () => {
-      try {
-        const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
-        const response = await fetch(`${baseUrl}/api/user/profile`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-          throw new Error(translations[currentLocale].common.error);
-        }
-
-        const data = await response.json();
-        setUser(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : translations[currentLocale].common.error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-  }, [router, currentLocale]);
-
   const handleLogout = () => {
-    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = `${config.auth.tokenKey}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
     router.push(`/${currentLocale}/pages/auth/login`);
   };
 
@@ -193,68 +118,7 @@ export default function DashboardPage() {
               <CardDescription>{t.borrowHistory.description}</CardDescription>
             </CardHeader>
             <CardContent>
-              {user.borrows.length === 0 ? (
-                <p className="text-center text-gray-500">{t.borrowHistory.empty}</p>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t.borrowHistory.table.book}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t.borrowHistory.table.borrowDate}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t.borrowHistory.table.dueDate}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t.borrowHistory.table.status}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t.borrowHistory.table.returnedAt}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t.borrowHistory.table.fine}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {user.borrows.map((borrow) => (
-                        <tr key={borrow.id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {borrow.book?.data?.title || t.borrowHistory.table.bookNotFound}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {new Date(borrow.borrowDate).toLocaleDateString()}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {new Date(borrow.dueDate).toLocaleDateString()}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              borrow.status === 'returned' 
-                                ? 'bg-green-100 text-green-800'
-                                : borrow.status === 'overdue'
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-blue-100 text-blue-800'
-                            }`}>
-                              {t.borrowHistory.status[borrow.status]}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {borrow.returnedAt ? new Date(borrow.returnedAt).toLocaleDateString() : '-'}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {borrow.fine > 0 ? `Rp ${borrow.fine.toLocaleString()}` : '-'}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+              <BorrowHistoryTable borrows={user.borrowedBooks} />
             </CardContent>
           </Card>
         </div>
